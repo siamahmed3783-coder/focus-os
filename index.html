@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17324D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>Siam Life OS</title>
+<style>
+:root{--nav:#17324D;--bg:#f5f7fb;--card:#fff;--text:#182230;--muted:#667085;--line:#e5e7eb;--green:#1f9d62;--red:#d64545;--gold:#d08a00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);padding-bottom:76px}
+header{background:linear-gradient(135deg,#17324D,#245b83);color:#fff;padding:22px 18px 18px;border-radius:0 0 24px 24px}
+h1{margin:0;font-size:25px}.sub{opacity:.85;margin-top:4px;font-size:13px}
+.container{max-width:760px;margin:auto;padding:14px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:4px 0 10px}.tab{border:0;background:#e8edf3;color:var(--nav);padding:9px 12px;border-radius:999px;white-space:nowrap;font-weight:700}.tab.active{background:var(--nav);color:#fff}
+.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 3px 12px #17324d0d}.metric{font-size:24px;font-weight:800}.label{font-size:12px;color:var(--muted)}.section{font-size:17px;font-weight:800;margin:18px 2px 10px}
+button,.btn{border:0;border-radius:12px;padding:11px 13px;font-weight:750;cursor:pointer;background:var(--nav);color:#fff}.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.light{background:#e8edf3;color:var(--nav)}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.quick button{min-height:62px;background:#fff;color:var(--nav);border:1px solid var(--line)}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d5dbe3;border-radius:10px;background:#fff;font:inherit}textarea{min-height:80px;resize:vertical}
+label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin:9px 0 5px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.item{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:11px 0}.item:last-child{border-bottom:0}.small{font-size:12px;color:var(--muted)}.pill{padding:4px 8px;border-radius:999px;background:#edf3f8;font-size:11px;font-weight:800}.empty{padding:22px;text-align:center;color:var(--muted)}
+.progress{height:10px;background:#e8edf3;border-radius:99px;overflow:hidden}.progress>div{height:100%;background:var(--green);width:0}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.prayer{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;z-index:20}.bottom-inner{max-width:760px;width:100%;display:grid;grid-template-columns:repeat(5,1fr)}.bottom button{border-radius:0;background:#fff;color:var(--muted);font-size:11px;padding:10px 2px}.bottom button.active{color:var(--nav);font-weight:900}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#182230;color:#fff;padding:10px 14px;border-radius:999px;display:none;z-index:50}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.quick{grid-template-columns:repeat(6,1fr)}.checks{grid-template-columns:repeat(5,1fr)}}
+
+.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.review-item{padding:11px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.status-done{border-left:5px solid var(--green)}.status-partial{border-left:5px solid var(--gold)}.status-missed{border-left:5px solid var(--red)}
+.bar-row{margin:10px 0}.bar-label{display:flex;justify-content:space-between;font-size:13px}.bar{height:11px;background:#e8edf3;border-radius:99px;overflow:hidden}.bar>div{height:100%;background:#1f9d62}
+textarea.big{min-height:110px}
+@media(max-width:480px){.review-grid{grid-template-columns:1fr}}
+</style>
+<style>
+#lockScreen{position:fixed;inset:0;background:linear-gradient(135deg,#17324D,#0e2235);color:#fff;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.lock-card{width:min(420px,100%);background:#fff;color:#182230;border-radius:22px;padding:22px;box-shadow:0 20px 60px #0006}.lock-card h2{margin:0 0 6px}.lock-card p{color:#667085;font-size:13px}.pin-input{font-size:24px;letter-spacing:8px;text-align:center}.lock-note{font-size:11px;color:#667085;margin-top:10px;line-height:1.5}.danger-note{background:#fff3f3;border:1px solid #ffd2d2;padding:10px;border-radius:10px;font-size:12px;color:#8d2d2d}
+#appShell{display:none}.security-actions{margin-top:10px}
+</style>
+
+</head>
+<body>
+<div id="lockScreen"><div class="lock-card"><div style="font-size:42px;text-align:center">🔐</div><h2 id="lockTitle" style="text-align:center">Siam Life OS</h2><p id="lockText" style="text-align:center">তোমার data encrypted করে রাখা হবে।</p><div id="setupFields"></div><label>PIN</label><input id="pinInput" class="pin-input" inputmode="numeric" type="password" maxlength="8" placeholder="••••" autocomplete="off"><div class="actions" style="margin-top:12px"><button class="btn green" style="width:100%" onclick="unlockOrSetup()" id="pinBtn">Unlock</button></div><div class="lock-note">⚠️ PIN ভুলে গেলে encrypted data recover করার কোনো backdoor নেই। তাই PIN অবশ্যই নিরাপদ জায়গায় মনে রাখবে।</div></div></div>
+<div id="appShell">
+<header>
+  <h1>📱 Siam Life OS</h1>
+  <div class="sub" id="today"></div>
+</header>
+
+<div class="container">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-view="home">🏠 Home</button>
+    <button class="tab" data-view="activity">⏱ Activity</button>
+    <button class="tab" data-view="study">📚 Study</button>
+    <button class="tab" data-view="money">💰 Money</button>
+    <button class="tab" data-view="prayer">🕌 Prayer</button>
+    <button class="tab" data-view="travel">🚶 Travel</button>
+    <button class="tab" data-view="habits">🎯 Habits</button>
+    <button class="tab" data-view="plan">📝 Plan</button>
+    <button class="tab" data-view="review">🌙 Review</button>
+    <button class="tab" data-view="reports">📊 Reports</button>
+    <button class="tab" data-view="settings">⚙️ Data</button>
+  </div>
+
+  <section id="home" class="view active">
+    <div class="section">আজকের অবস্থা</div>
+    <div class="grid">
+      <div class="card"><div class="metric" id="mStudy">0m</div><div class="label">Study time</div></div>
+      <div class="card"><div class="metric" id="mIelts">0m</div><div class="label">IELTS</div></div>
+      <div class="card"><div class="metric" id="mResearch">0m</div><div class="label">Research</div></div>
+      <div class="card"><div class="metric" id="mSpend">৳0</div><div class="label">Today's spending</div></div>
+    </div>
+    <div class="section">🎯 Priority</div>
+    <div class="card">
+      <div>IELTS <span style="float:right">40%</span></div><div class="progress"><div style="width:40%"></div></div><br>
+      <div>Research <span style="float:right">30%</span></div><div class="progress"><div style="width:30%"></div></div><br>
+      <div>Academics <span style="float:right">20%</span></div><div class="progress"><div style="width:20%"></div></div><br>
+      <div>Job Prep <span style="float:right">10%</span></div><div class="progress"><div style="width:10%"></div></div>
+    </div>
+    <div class="section">⚡ Quick Add</div>
+    <div class="quick">
+      <button onclick="openView('activity')">⏱<br>Activity</button>
+      <button onclick="openView('study')">📚<br>Study</button>
+      <button onclick="openView('money')">💰<br>Expense</button>
+      <button onclick="openView('prayer')">🕌<br>Prayer</button>
+      <button onclick="openView('travel')">🚶<br>Trip</button>
+      <button onclick="openView('habits')">🎯<br>Habit</button>
+    </div>
+    <div id="installBox" class="card" style="display:none;margin-top:12px">
+      <b>📲 Siam Life OS install করো</b>
+      <div class="small" style="margin:6px 0 10px">ফোনে অ্যাপের মতো রাখতে Install চাপো।</div>
+      <button class="btn green" onclick="installApp()">Install App</button>
+    </div>
+    <div class="section">আজকের timeline</div>
+    <div class="card" id="timeline"></div>
+  </section>
+
+  <section id="activity" class="view">
+    <div class="section">⏱ Activity Log</div>
+    <div class="card">
+      <label>কাজ</label><input id="aName" placeholder="যেমন: IELTS Reading">
+      <div class="row"><div><label>Start</label><input id="aStart" type="time"></div><div><label>End</label><input id="aEnd" type="time"></div></div>
+      <label>Type</label><select id="aType"><option>IELTS</option><option>Research</option><option>Academic</option><option>Job Prep</option><option>Prayer</option><option>Exercise</option><option>Personal</option><option>Other</option></select>
+      <label>খরচ (৳), থাকলে</label><input id="aCost" type="number" min="0" placeholder="0">
+      <label>Notes</label><textarea id="aNote" placeholder="কী করলাম..."></textarea><br>
+      <button class="btn green" onclick="addActivity()">Save activity</button>
+    </div>
+    <div class="section">আজকের activities</div><div class="card" id="activityList"></div>
+  </section>
+
+  <section id="study" class="view">
+    <div class="section">📚 Study Session</div>
+    <div class="card">
+      <label>Area</label><select id="sArea"><option>IELTS</option><option>Research</option><option>Academics</option><option>Job Prep</option></select>
+      <label>Task</label><input id="sTask" placeholder="যেমন: IELTS Writing Task 2">
+      <div class="row"><div><label>Start</label><input id="sStart" type="time"></div><div><label>End</label><input id="sEnd" type="time"></div></div>
+      <label>What I finished</label><textarea id="sDone" placeholder="আজ কী শেষ করলাম?"></textarea><br>
+      <div class="card" style="margin:10px 0;background:#f7fafc">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div><div class="label">⏱ Live timer</div><div id="timerDisplay" style="font-size:28px;font-weight:900">00:00:00</div><div class="small" id="timerStatus">Timer ready</div></div>
+          <div class="actions"><button class="btn green" id="startTimerBtn" onclick="startStudyTimer()">▶ Start</button><button class="btn red" id="stopTimerBtn" onclick="stopStudyTimer()" disabled>■ Stop</button></div>
+        </div>
+      </div>
+      <button class="btn green" onclick="addStudy()">Save study</button>
+    </div>
+    <div class="section">আজকের study</div><div class="card" id="studyList"></div>
+  </section>
+
+  <section id="money" class="view">
+    <div class="section">💰 Expense</div>
+    <div class="card">
+      <div class="row"><div><label>Amount (৳)</label><input id="eAmt" type="number" min="0"></div><div><label>Time</label><input id="eTime" type="time"></div></div>
+      <label>Category</label><select id="eCat"><option>Food</option><option>Transport</option><option>Study</option><option>Phone</option><option>Shopping</option><option>Medical</option><option>University</option><option>Family</option><option>Other</option></select>
+      <label>Purpose</label><input id="ePurpose" placeholder="কী কাজে?">
+      <label>Place / Paid to</label><input id="ePlace" placeholder="কোথায়/কাকে?">
+      <label>Need / Want</label><select id="eNeed"><option>Need</option><option>Want</option></select><br>
+      <button class="btn green" onclick="addExpense()">Save expense</button>
+    </div>
+    <div class="section">আজকের খরচ</div><div class="card" id="expenseList"></div>
+  </section>
+
+  <section id="prayer" class="view">
+    <div class="section">🕌 Prayer Tracker</div>
+    <div class="card">
+      <div class="checks" id="prayerForm"></div>
+      <label>Total prayer minutes today</label><input id="pTotal" type="number" min="0" placeholder="যেমন 38">
+      <br><button class="btn green" onclick="savePrayer()">Save prayer record</button>
+    </div>
+    <div class="section">আজকের নামাজ</div><div class="card" id="prayerStatus"></div>
+  </section>
+
+  <section id="travel" class="view">
+    <div class="section">🚶 Movement / Trip</div>
+    <div class="card">
+      <div class="row"><div><label>Leave</label><input id="tLeave" type="time"></div><div><label>Return</label><input id="tReturn" type="time"></div></div>
+      <label>From</label><input id="tFrom" placeholder="বাসা">
+      <label>To / Place</label><input id="tTo" placeholder="DIU / বাজার / লাইব্রেরি">
+      <label>Purpose</label><input id="tPurpose" placeholder="Class / Shopping / Research...">
+      <label>Transport</label><select id="tTransport"><option>Walking</option><option>Rickshaw</option><option>CNG</option><option>Bus</option><option>Metro</option><option>Train</option><option>Ride Share</option><option>Other</option></select>
+      <label>Cost (৳)</label><input id="tCost" type="number" min="0"><br>
+      <button class="btn green" onclick="addTrip()">Save trip</button>
+    </div>
+    <div class="section">আজকের trips</div><div class="card" id="tripList"></div>
+  </section>
+
+  <section id="habits" class="view">
+    <div class="section">🎯 Today's Habits</div>
+    <div class="card" id="habitList"></div>
+  </section>
+
+
+  <section id="plan" class="view">
+    <div class="section">📝 Today's Plan</div>
+    <div class="card">
+      <label>What do you want to do?</label><input id="planTask" placeholder="যেমন: IELTS Writing Task 2">
+      <div class="row">
+        <div><label>Area</label><select id="planArea"><option>IELTS</option><option>Research</option><option>Academics</option><option>Job Prep</option><option>Personal</option></select></div>
+        <div><label>Target minutes</label><input id="planMin" type="number" min="0" placeholder="60"></div>
+      </div>
+      <label>Priority</label><select id="planPriority"><option>High</option><option>Medium</option><option>Low</option></select><br>
+      <button class="btn green" onclick="addPlan()">Add planned task</button>
+    </div>
+    <div class="section">আজকের planned tasks</div>
+    <div class="card" id="planList"></div>
+  </section>
+  <section id="review" class="view">
+    <div class="section">🌙 Daily Review</div>
+    <div class="card">
+      <p class="small">আজ কী করতে চেয়েছিলে, কী করতে পেরেছো আর কী পারোনি—কারণসহ লিখে রাখো।</p>
+      <div id="reviewTasks"></div>
+      <label>আজকের overall reflection</label>
+      <textarea id="reviewNote" class="big" placeholder="আজকের দিন সম্পর্কে ২–৩ লাইনে লিখো..."></textarea><br>
+      <button class="btn green" onclick="saveReview()">Save today's review</button>
+    </div>
+    <div class="section">আজকের saved review</div><div class="card" id="savedReview"></div>
+  </section>
+
+  <section id="reports" class="view">
+    <div class="section">📊 Weekly & Monthly Reports</div>
+    <div class="card">
+      <div class="row">
+        <div><label>Report period</label><select id="reportPeriod" onchange="renderReports()"><option value="week">This week</option><option value="month">This month</option></select></div>
+        <div><label>Range</label><input id="reportRange" disabled></div>
+      </div>
+    </div>
+    <div class="grid" id="reportMetrics"></div>
+    <div class="section">⏱ Where did my time go?</div><div class="card" id="timeReport"></div>
+    <div class="section">💸 Where did my money go?</div><div class="card" id="moneyReport"></div>
+    <div class="section">🧠 Why did I miss tasks?</div><div class="card" id="missReport"></div>
+    <div class="section">📈 Reflection</div><div class="card" id="reportReflection"></div>
+  </section>
+
+  <section id="settings" class="view">
+    <div class="section">🔐 Security</div>
+    <div class="card">
+      <b>Local encryption</b>
+      <p class="small">তোমার saved data AES-GCM encryption দিয়ে এই browser-এ রাখা হয়। PIN ছাড়া app data decrypt করা যায় না।</p>
+      <div class="actions security-actions"><button class="btn light" onclick="lockApp()">🔒 Lock now</button><button class="btn light" onclick="changePin()">🔑 Change PIN</button></div>
+      <div class="danger-note" style="margin-top:10px">PIN ভুলে গেলে recovery নেই। Backup রাখো এবং backup-টিও নিরাপদ জায়গায় রাখো।</div>
+    </div>
+    <div class="section">⚙️ Data</div>
+    <div class="card">
+      <p class="small">সব data এই browser-এর local storage-এ থাকে। Backup রাখতে JSON export করো।</p>
+      <div class="actions">
+        <button onclick="exportData()">Export backup</button>
+        <label class="btn light" style="display:inline-block">Import backup <input id="importFile" type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+        <button class="btn red" onclick="clearAll()">Clear all data</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="bottom"><div class="bottom-inner">
+  <button class="active" onclick="openView('home')">🏠<br>Home</button>
+  <button onclick="openView('activity')">⏱<br>Activity</button>
+  <button onclick="openView('study')">📚<br>Study</button>
+  <button onclick="openView('money')">💰<br>Money</button>
+  <button onclick="openView('review')">🌙<br>Review</button>
+  <button onclick="openView('reports')">📊<br>Reports</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='siamLifeOS_secure_v1';
+const LEGACY_KEY='siamLifeOS_v1';
+const TIMER_KEY='siamLifeOS_timer';
+const DEFAULT_DB={activities:[],study:[],expenses:[],trips:[],prayer:{},habits:{},plans:[],reviews:{}};
+let db=structuredClone(DEFAULT_DB), cryptoKey=null, storageRecord=null, timerState=JSON.parse(localStorage.getItem(TIMER_KEY)||'null');
+let deferredInstallPrompt=null, dirty=false, unlocked=false, idleTimer=null;
+const today=()=>new Date().toISOString().slice(0,10);
+const fmt=n=>Math.round(n||0);
+function $(id){return document.getElementById(id)}
+function toast(t){let x=$('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',1800)}
+function mins(a,b){if(!a||!b)return 0;let [h1,m1]=a.split(':').map(Number),[h2,m2]=b.split(':').map(Number);let x=h1*60+m1,y=h2*60+m2;if(y<x)y+=1440;return y-x}
+function b64(buf){return btoa(String.fromCharCode(...new Uint8Array(buf)))}
+function fromB64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
+async function deriveKey(pin,salt){let base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:210000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function encryptDb(data,key=cryptoKey,salt=storageRecord?.salt){let iv=crypto.getRandomValues(new Uint8Array(12));let plain=new TextEncoder().encode(JSON.stringify(data));let cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,plain);return {v:1,salt,iv:b64(iv),data:b64(cipher)}}
+async function decryptRecord(rec,pin){let salt=fromB64(rec.salt),key=await deriveKey(pin,salt),plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(rec.iv)},key,fromB64(rec.data));return {db:JSON.parse(new TextDecoder().decode(plain)),key,salt:rec.salt}}
+function normalizeDb(x){x={...DEFAULT_DB,...(x||{})};x.plans??=[];x.reviews??={};x.activities??=[];x.study??=[];x.expenses??=[];x.trips??=[];x.prayer??={};x.habits??={};return x}
+function hasEncrypted(){return !!localStorage.getItem(KEY)}
+function showSetup(){
+  $('lockTitle').textContent='🔐 Set your PIN'; $('lockText').textContent='প্রথমবারের মতো একটি 4–8 digit PIN সেট করো।';
+  $('pinBtn').textContent='Create PIN'; $('setupFields').innerHTML='<label>Confirm PIN</label><input id="pinConfirm" class="pin-input" inputmode="numeric" type="password" maxlength="8" placeholder="••••" autocomplete="off">';
+}
+function showUnlock(){ $('lockTitle').textContent='🔐 Siam Life OS locked'; $('lockText').textContent='তোমার encrypted data খুলতে PIN দাও।'; $('pinBtn').textContent='Unlock'; $('setupFields').innerHTML=''; }
+async function initSecurity(){
+  if(!window.crypto?.subtle){alert('এই browser-এ secure encryption support নেই। Chrome-এর latest version ব্যবহার করো।');return}
+  let rec=localStorage.getItem(KEY);
+  if(rec){storageRecord=JSON.parse(rec);showUnlock();return}
+  let legacy=localStorage.getItem(LEGACY_KEY);
+  showSetup();
+  if(legacy){$('lockText').textContent='আগের data পাওয়া গেছে। নতুন PIN সেট করলে পুরোনো data encrypted হয়ে যাবে।'}
+}
+async function unlockOrSetup(){
+  const pin=$('pinInput').value.trim();
+  if(!/^\d{4,8}$/.test(pin))return toast('4–8 digit PIN দাও');
+  try{
+    if(hasEncrypted()){
+      const out=await decryptRecord(storageRecord,pin);db=normalizeDb(out.db);cryptoKey=out.key;unlocked=true;enterApp();toast('Unlocked ✓');
+    }else{
+      const confirmPin=$('pinConfirm')?.value.trim(); if(pin!==confirmPin)return toast('দুই PIN একই হতে হবে');
+      let legacy=localStorage.getItem(LEGACY_KEY); db=normalizeDb(legacy?JSON.parse(legacy):DEFAULT_DB);
+      const salt=crypto.getRandomValues(new Uint8Array(16));cryptoKey=await deriveKey(pin,salt);storageRecord=await encryptDb(db,cryptoKey,b64(salt));localStorage.setItem(KEY,JSON.stringify(storageRecord));localStorage.removeItem(LEGACY_KEY);unlocked=true;enterApp();toast('PIN created & data encrypted ✓');
+    }
+  }catch(e){toast('ভুল PIN অথবা corrupted data');$('pinInput').value='';}
+}
+function enterApp(){ $('lockScreen').style.display='none';$('appShell').style.display='block'; $('pinInput').value=''; render(); renderPlans(); renderReview(); renderReports(); resetIdle(); }
+async function save(){if(!unlocked||!cryptoKey)return;storageRecord=await encryptDb(db,cryptoKey,storageRecord.salt);localStorage.setItem(KEY,JSON.stringify(storageRecord));render();resetIdle()}
+function lockApp(){if(!unlocked)return;unlocked=false;cryptoKey=null;showUnlock();$('lockScreen').style.display='flex';$('appShell').style.display='none';clearTimeout(idleTimer);toast('App locked 🔒')}
+function resetIdle(){clearTimeout(idleTimer);if(!unlocked)return;idleTimer=setTimeout(()=>lockApp(),10*60*1000)}
+['click','touchstart','keydown','input'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
+async function changePin(){if(!unlocked)return;let old=prompt('বর্তমান PIN দাও');if(!old)return;try{await decryptRecord(storageRecord,old)}catch{return toast('বর্তমান PIN সঠিক নয়')}let np=prompt('নতুন 4–8 digit PIN দাও');if(!/^\d{4,8}$/.test(np||''))return toast('নতুন PIN 4–8 digit হতে হবে');let cp=prompt('নতুন PIN আবার দাও');if(np!==cp)return toast('PIN মেলেনি');let salt=crypto.getRandomValues(new Uint8Array(16));cryptoKey=await deriveKey(np,salt);storageRecord=await encryptDb(db,cryptoKey,b64(salt));localStorage.setItem(KEY,JSON.stringify(storageRecord));toast('PIN changed ✓')}
+function saveTimerState(){localStorage.setItem(TIMER_KEY,JSON.stringify(timerState))}
+function updateTimerUI(){const d=$('timerDisplay'),st=$('timerStatus'),start=$('startTimerBtn'),stop=$('stopTimerBtn');if(!d)return;let sec=timerState?.startMs?Math.max(0,Math.floor((Date.now()-timerState.startMs)/1000)):0;let h=String(Math.floor(sec/3600)).padStart(2,'0'),m=String(Math.floor(sec%3600/60)).padStart(2,'0'),s=String(sec%60).padStart(2,'0');d.textContent=`${h}:${m}:${s}`;st.textContent=timerState?'Running · '+(timerState.area||'Study'):'Timer ready';start.disabled=!!timerState;stop.disabled=!timerState}
+function startStudyTimer(){if(timerState)return;timerState={startMs:Date.now(),startTime:new Date().toTimeString().slice(0,5),area:$('sArea').value,task:$('sTask').value||'Study session'};$('sStart').value=timerState.startTime;saveTimerState();updateTimerUI();toast('Timer started ▶')}
+function stopStudyTimer(){if(!timerState)return;let end=new Date(),endTime=end.toTimeString().slice(0,5);$('sEnd').value=endTime;let elapsed=Math.max(0,Math.floor((Date.now()-timerState.startMs)/1000));timerState=null;localStorage.removeItem(TIMER_KEY);updateTimerUI();toast('Timer stopped ■ · '+Math.round(elapsed/60)+' min')}
+setInterval(updateTimerUI,1000);
+function openView(id){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.view===id));window.scrollTo({top:0,behavior:'smooth'});render();if(id==='plan')renderPlans();if(id==='review')renderReview();if(id==='reports')renderReports()}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>openView(b.dataset.view));$('today').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+function addActivity(){let x={id:Date.now(),date:today(),name:aName.value,start:aStart.value,end:aEnd.value,type:aType.value,cost:+aCost.value||0,note:aNote.value};if(!x.name)return toast('কাজের নাম দাও');db.activities.push(x);['aName','aStart','aEnd','aCost','aNote'].forEach(id=>$(id).value='');save();toast('Activity saved ✓')}
+function addStudy(){let x={id:Date.now(),date:today(),area:sArea.value,task:sTask.value,start:sStart.value,end:sEnd.value,done:sDone.value};if(!x.task)return toast('Study task দাও');if(!x.start||!x.end)return toast('Start/End time দাও');db.study.push(x);['sTask','sStart','sEnd','sDone'].forEach(id=>$(id).value='');save();toast('Study saved ✓')}
+function addExpense(){let x={id:Date.now(),date:today(),amt:+eAmt.value||0,time:eTime.value,cat:eCat.value,purpose:ePurpose.value,place:ePlace.value,need:eNeed.value};if(!x.amt)return toast('Amount দাও');db.expenses.push(x);['eAmt','eTime','ePurpose','ePlace'].forEach(id=>$(id).value='');save();toast('Expense saved ✓')}
+function addTrip(){let x={id:Date.now(),date:today(),leave:tLeave.value,ret:tReturn.value,from:tFrom.value,to:tTo.value,purpose:tPurpose.value,transport:tTransport.value,cost:+tCost.value||0};if(!x.to)return toast('কোথায় গিয়েছিলে লিখো');db.trips.push(x);['tLeave','tReturn','tFrom','tTo','tPurpose','tCost'].forEach(id=>$(id).value='');save();toast('Trip saved ✓')}
+const prayers=['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+function savePrayer(){db.prayer[today()]={};prayers.forEach(p=>db.prayer[today()][p]=$('p_'+p).checked);db.prayer[today()].minutes=+pTotal.value||0;save();toast('Prayer saved ✓')}
+function addPlan(){let x={id:Date.now(),date:today(),task:planTask.value,area:planArea.value,target:+planMin.value||0,priority:planPriority.value,status:'planned'};if(!x.task)return toast('Task লিখো');db.plans.push(x);planTask.value='';planMin.value='';save();toast('Task planned ✓')}
+function updatePlan(id,status,reason){let x=db.plans.find(a=>a.id===id);if(!x)return;x.status=status;x.reason=reason||'';save();toast('Plan updated ✓')}
+function saveReview(){let d=today(),note=$('reviewNote').value,rows=document.querySelectorAll('#reviewTasks .review-row');db.reviews[d]??={tasks:{},note:''};rows.forEach(row=>{let id=row.dataset.id,status=row.querySelector('.rstatus').value,reason=row.querySelector('.rreason').value;db.reviews[d].tasks[id]={status,reason}});db.reviews[d].note=note;save();toast('Daily review saved ✓')}
+function inPeriod(date,period){let dt=new Date(date+'T00:00:00'),now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),now.getDate());if(period==='week'){let day=start.getDay(),diff=(day+6)%7;start.setDate(start.getDate()-diff)}else start.setDate(1);return dt>=start&&dt<=now}
+function renderPlans(){let arr=db.plans.filter(x=>x.date===today());$('planList').innerHTML=arr.length?arr.map(x=>`<div class="item"><div><b>${x.task}</b><div class="small">${x.area} · target ${x.target} min · ${x.priority} priority</div>${x.status!=='planned'?'<div class="small">Status: '+x.status+(x.reason?' · '+x.reason:'')+'</div>':''}</div><div class="actions"><button class="btn green" onclick="updatePlan(${x.id},'done','')">✓</button><button class="btn light" onclick="let r=prompt('কেন আংশিক হলো?');updatePlan(${x.id},'partial',r||'')">½</button><button class="btn red" onclick="let r=prompt('কেন করতে পারোনি?');updatePlan(${x.id},'missed',r||'')">×</button></div></div>`).join(''):'<div class="empty">আজ কোনো planned task নেই।</div>'}
+function renderReview(){let plans=db.plans.filter(x=>x.date===today()),review=db.reviews[today()]||{tasks:{},note:''};$('reviewTasks').innerHTML=plans.length?plans.map(x=>{let r=review.tasks[x.id]||{status:x.status==='planned'?'planned':x.status,reason:x.reason||''};return `<div class="review-row review-item ${r.status==='done'?'status-done':r.status==='partial'?'status-partial':r.status==='missed'?'status-missed':''}" data-id="${x.id}"><b>${x.task}</b><div class="small">${x.area} · target ${x.target} min</div><label>Status</label><select class="rstatus"><option value="done" ${r.status==='done'?'selected':''}>Done ✓</option><option value="partial" ${r.status==='partial'?'selected':''}>Partial ½</option><option value="missed" ${r.status==='missed'?'selected':''}>Could not do ×</option><option value="planned" ${r.status==='planned'?'selected':''}>Not reviewed</option></select><label>Why / note</label><input class="rreason" value="${(r.reason||'').replace(/"/g,'&quot;')}" placeholder="সময় ছিল না / university work / tired..."></div>`}).join(''):'<div class="empty">আগে Plan tab-এ আজকের tasks যোগ করো।</div>';$('reviewNote').value=review.note||'';$('savedReview').innerHTML=review.note?`<b>আজকের reflection</b><p>${review.note}</p>`:'<div class="empty">আজকের review এখনো save হয়নি।</div>'}
+function renderReports(){let period=$('reportPeriod').value,label=period==='week'?'This week':'This month',acts=db.activities.filter(x=>inPeriod(x.date,period)),studies=db.study.filter(x=>inPeriod(x.date,period)),ex=db.expenses.filter(x=>inPeriod(x.date,period)),trips=db.trips.filter(x=>inPeriod(x.date,period)),totalStudy=studies.reduce((a,x)=>a+mins(x.start,x.end),0),areas=['IELTS','Research','Academics','Job Prep','Other'],areaM=Object.fromEntries(areas.map(a=>[a,studies.filter(x=>x.area===a).reduce((s,x)=>s+mins(x.start,x.end),0)])),spend=ex.reduce((a,x)=>a+x.amt,0),prayerDays=Object.keys(db.prayer).filter(d=>inPeriod(d,period)),prayerDone=prayerDays.reduce((a,d)=>a+['Fajr','Dhuhr','Asr','Maghrib','Isha'].filter(p=>db.prayer[d]?.[p]).length,0),reviews=Object.entries(db.reviews).filter(([d])=>inPeriod(d,period)).map(([,v])=>v),missed={};reviews.forEach(v=>Object.values(v.tasks||{}).forEach(t=>{if(t.status==='missed'){let k=t.reason||'No reason entered';missed[k]=(missed[k]||0)+1}}));$('reportRange').value=label;$('reportMetrics').innerHTML=[['Study',totalStudy+' min'],['IELTS',areaM.IELTS+' min'],['Research',areaM.Research+' min'],['Spending','৳'+fmt(spend)],['Prayer',prayerDone+' prayers'],['Trips',trips.length+' trips'],['Activities',acts.length+' entries'],['Missed tasks',Object.values(missed).reduce((a,b)=>a+b,0)]].map(x=>`<div class="card"><div class="metric" style="font-size:20px">${x[1]}</div><div class="label">${x[0]}</div></div>`).join('');$('timeReport').innerHTML=areas.map(a=>{let pct=totalStudy?Math.round(areaM[a]/totalStudy*100):0;return `<div class="bar-row"><div class="bar-label"><span>${a}</span><b>${areaM[a]}m (${pct}%)</b></div><div class="bar"><div style="width:${pct}%"></div></div></div>`}).join('');let cats={};ex.forEach(x=>cats[x.cat]=(cats[x.cat]||0)+x.amt);$('moneyReport').innerHTML=Object.keys(cats).length?Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="item"><b>${k}</b><span>৳${fmt(v)}</span></div>`).join(''):'<div class="empty">No expenses logged.</div>';$('missReport').innerHTML=Object.keys(missed).length?Object.entries(missed).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="item"><b>${k}</b><span>${v} time(s)</span></div>`).join(''):'<div class="empty">এই period-এ missed-task reason নেই।</div>';let best=areas.slice().sort((a,b)=>areaM[b]-areaM[a])[0];$('reportReflection').innerHTML=`<b>সবচেয়ে বেশি study time:</b> ${best} (${areaM[best]} min).<br><br><span class="small">Reports তোমার logged data-এর ওপর ভিত্তি করে তৈরি হয়।</span>`}
+function toggleHabit(name){db.habits[today()]??={};db.habits[today()][name]=!db.habits[today()][name];save()}
+const habitNames=['IELTS study','Research work','Academic study','English news/vocabulary','Job preparation','Exercise / walk','Quran / reading','Sleep on time'];
+function del(type,id){db[type]=db[type].filter(x=>x.id!==id);save();toast('Deleted')}
+function listHtml(arr,kind){if(!arr.length)return '<div class="empty">আজ কোনো entry নেই।</div>';return arr.slice().reverse().map(x=>{if(kind==='a')return `<div class="item"><div><b>${x.name}</b><div class="small">${x.start||''}–${x.end||''} · ${x.type} · ${mins(x.start,x.end)} min</div></div><button class="btn red" onclick="del('activities',${x.id})">×</button></div>`;if(kind==='s')return `<div class="item"><div><b>${x.area}: ${x.task}</b><div class="small">${x.start||''}–${x.end||''} · ${mins(x.start,x.end)} min<br>${x.done||''}</div></div><button class="btn red" onclick="del('study',${x.id})">×</button></div>`;if(kind==='e')return `<div class="item"><div><b>৳${fmt(x.amt)} · ${x.purpose||x.cat}</b><div class="small">${x.time||''} · ${x.place||''} · ${x.cat} · ${x.need}</div></div><button class="btn red" onclick="del('expenses',${x.id})">×</button></div>`;return `<div class="item"><div><b>${x.from||'Home'} → ${x.to}</b><div class="small">${x.leave||''}–${x.ret||''} · ${x.purpose||''} · ${x.transport} · ৳${fmt(x.cost)}</div></div><button class="btn red" onclick="del('trips',${x.id})">×</button></div>`}).join('')}
+function render(){let d=today(),acts=db.activities.filter(x=>x.date===d),studies=db.study.filter(x=>x.date===d),ex=db.expenses.filter(x=>x.date===d),trips=db.trips.filter(x=>x.date===d),studyM=studies.reduce((a,x)=>a+mins(x.start,x.end),0),ielts=studies.filter(x=>x.area==='IELTS').reduce((a,x)=>a+mins(x.start,x.end),0),research=studies.filter(x=>x.area==='Research').reduce((a,x)=>a+mins(x.start,x.end),0);$('mStudy').textContent=fmt(studyM)+'m';$('mIelts').textContent=fmt(ielts)+'m';$('mResearch').textContent=fmt(research)+'m';$('mSpend').textContent='৳'+fmt(ex.reduce((a,x)=>a+x.amt,0));$('activityList').innerHTML=listHtml(acts,'a');$('studyList').innerHTML=listHtml(studies,'s');$('expenseList').innerHTML=listHtml(ex,'e');$('tripList').innerHTML=listHtml(trips,'t');let p=db.prayer[d]||{};$('prayerForm').innerHTML=prayers.map(n=>`<div class="prayer"><label style="margin:0"><input type="checkbox" id="p_${n}" ${p[n]?'checked':''}> ${n}</label></div>`).join('');$('pTotal').value=p.minutes||'';$('prayerStatus').innerHTML=`<b>${prayers.filter(n=>p[n]).length}/5 prayers completed</b><div class="progress" style="margin-top:9px"><div style="width:${prayers.filter(n=>p[n]).length*20}%"></div></div><div class="small" style="margin-top:8px">${p.minutes||0} minutes logged today</div>`;let h=db.habits[d]||{};$('habitList').innerHTML=habitNames.map(n=>`<div class="item"><b>${n}</b><button class="btn ${h[n]?'green':'light'}" onclick="toggleHabit('${n.replace(/'/g,"\\'")}')">${h[n]?'✓ Done':'Mark done'}</button></div>`).join('');let timeline=[...acts.map(x=>({time:x.start||'',text:x.name,tag:x.type})),...studies.map(x=>({time:x.start||'',text:x.task,tag:x.area})),...trips.map(x=>({time:x.leave||'',text:(x.from||'Home')+' → '+x.to,tag:'Travel'}))].sort((a,b)=>a.time.localeCompare(b.time));renderPlans();renderReview();renderReports();$('timeline').innerHTML=timeline.length?timeline.map(x=>`<div class="item"><div><b>${x.time||'—'}</b> ${x.text}</div><span class="pill">${x.tag}</span></div>`).join(''):'<div class="empty">আজকের timeline খালি।</div>'}
+async function exportData(){if(!unlocked)return;let backup={format:'Siam Life OS encrypted backup',version:1,...storageRecord};let blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='siam-life-os-encrypted-backup-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Encrypted backup exported ✓')}
+async function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=async()=>{try{let obj=JSON.parse(r.result);if(obj.format==='Siam Life OS encrypted backup'&&obj.data&&obj.iv&&obj.salt){let pin=prompt('এই encrypted backup-এর PIN দাও');if(!pin)return;let out=await decryptRecord(obj,pin);db=normalizeDb(out.db);await save();toast('Encrypted backup imported ✓')}else{let imported=normalizeDb(obj);db=imported;await save();toast('Legacy/plain backup imported & encrypted ✓')}}catch(err){toast('Backup invalid অথবা PIN ভুল')}};r.readAsText(f)}
+function clearAll(){if(confirm('সব data মুছে ফেলবে? PIN থাকবে, শুধু data মুছবে।')){db=structuredClone(DEFAULT_DB);save();toast('All data cleared')}}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;const b=$('installBox');if(b)b.style.display='block'});window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null;const b=$('installBox');if(b)b.style.display='none';toast('Siam Life OS installed ✓')});async function installApp(){if(!deferredInstallPrompt){toast('Install option browser/hosting-এর ওপর নির্ভর করছে');return}deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null}
+if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+updateTimerUI();initSecurity();
+</script>
+</div>
+</body>
+</html>

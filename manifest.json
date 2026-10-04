@@ -1,0 +1,14 @@
+{
+  "name": "Siam Life OS",
+  "short_name": "Siam Life OS",
+  "description": "Private local life, study, money, prayer and productivity tracker.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#17324D",
+  "orientation": "portrait",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
